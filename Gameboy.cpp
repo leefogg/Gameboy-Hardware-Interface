@@ -12,7 +12,6 @@ typedef uint8 byte;
 typedef char int8;
 typedef unsigned short uint16; 
 typedef short int16;
-#define register volatile byte&
 
 namespace {
   	inline constexpr bool testBit(const byte data, const byte bit) {
@@ -76,12 +75,12 @@ namespace System {
 	
   	namespace Output {
         namespace LCD {
-            register Control = 		*reinterpret_cast<byte *>(0xFF40);
-            register Stats = 		*reinterpret_cast<byte *>(0xFF41);
-            register X = 			*reinterpret_cast<byte *>(0xFF43);
-            register Y = 			*reinterpret_cast<byte *>(0xFF42);
-            register Scanline = 	*reinterpret_cast<byte *>(0xFF44);
-            register InterruptY = 	*reinterpret_cast<byte *>(0xFF45);
+            volatile byte& Control = 	*reinterpret_cast<byte *>(0xFF40);
+            volatile byte& Stats = 		*reinterpret_cast<byte *>(0xFF41);
+            volatile byte& X = 			*reinterpret_cast<byte *>(0xFF43);
+            volatile byte& Y = 			*reinterpret_cast<byte *>(0xFF42);
+            volatile byte& Scanline = 	*reinterpret_cast<byte *>(0xFF44);
+            volatile byte& InterruptY = *reinterpret_cast<byte *>(0xFF45);
 
             enum RenderMode {
                 Hblank,
@@ -112,8 +111,8 @@ namespace System {
             }
           
           	namespace Background {
-				register BGPI  = 		*reinterpret_cast<byte *>(0xFF68); // Background palette index
-              	register BGPD  = 		*reinterpret_cast<byte *>(0xFF69); // Background palette data
+				volatile byte& BGPI  = *reinterpret_cast<byte *>(0xFF68); // Background palette index
+              	volatile byte& BGPD  = *reinterpret_cast<byte *>(0xFF69); // Background palette data
               
               	static void setPaletteIndex(byte index) {
                 	byte bgpi = BGPI;
