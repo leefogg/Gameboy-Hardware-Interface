@@ -15,23 +15,23 @@ typedef short int16;
 #define register volatile byte&
 
 namespace {
-  	constexpr bool testBit(const byte data, const byte bit) {
+  	inline constexpr bool testBit(const byte data, const byte bit) {
       	return (data & (1 << bit)) != 0;
     }
   	
-  	constexpr byte setBit(const byte bit, byte data) {
+  	inline constexpr byte setBit(const byte bit, byte data) {
       	data |= (1 << (bit-1));
       	return data;
     }
   	
-  	constexpr byte clearBit(const byte bit, byte data) {
+  	inline constexpr byte clearBit(const byte bit, byte data) {
       	data &= ~(1 << (bit-1));
       	return data;
     }
 }
 
 namespace System {
-    volatile byte &memory(const uint16 loc) {
+    inline volatile byte &memory(const uint16 loc) {
      	return *reinterpret_cast<byte *>(loc);
     }
   
@@ -55,23 +55,19 @@ namespace System {
         }
 
         struct Controller {
-            struct InputData {
-              byte data;
-            };
-
-            Controller(const InputData controller) : 
-                A(testBit(controller.data, 0)), 
-                B(testBit(controller.data, 1)), 
-                Select(testBit(controller.data, 2)),
-                Start(testBit(controller.data, 3)),
-                Left(testBit(controller.data, 4)), 
-                Right(testBit(controller.data, 5)), 
-                Up(testBit(controller.data, 6)),
-                Down(testBit(controller.data, 7)){
+            Controller(const byte data) : 
+                A(testBit(data, 0)), 
+                B(testBit(data, 1)), 
+                Select(testBit(data, 2)),
+                Start(testBit(data, 3)),
+                Left(testBit(data, 4)), 
+                Right(testBit(data, 5)), 
+                Up(testBit(data, 6)),
+                Down(testBit(data, 7)){
             }
 
             Controller() : 
-                Controller(InputData{getControllerBits()}) {
+                Controller(getControllerBits()) {
             }
 
             bool A, B, Start, Select, Up, Down, Left, Right;
@@ -90,8 +86,8 @@ namespace System {
             enum RenderMode {
                 Hblank,
                 Vblank,
-                OAMRAM,
-                LCDTransfer
+                OAM,
+                VRAM
             };
 
             RenderMode getRenderMode() {
@@ -156,5 +152,6 @@ namespace System {
 
 int main() {
     System::Output::LCD::enable();
+  	System::Output::LCD::X++;
     return System::Output::LCD::getRenderMode();
 }
