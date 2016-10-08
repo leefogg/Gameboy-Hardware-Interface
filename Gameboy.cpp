@@ -38,14 +38,14 @@ namespace System {
   	namespace Input {
         volatile byte& JOYP = *reinterpret_cast<byte *>(0xFF00);
 
-        void enableDPad() {
+        static void enableDPad() {
           	JOYP |= BIT5;
         }
-        void enableButtons() {
+        static void enableButtons() {
           	JOYP |= BIT6;
         }
 
-        byte getControllerBits() {
+        static byte getControllerBits() {
             byte bits;
             enableDPad();
             bits = JOYP << 4;
@@ -90,45 +90,45 @@ namespace System {
                 VRAM
             };
 
-            RenderMode getRenderMode() {
+           	static RenderMode getRenderMode() {
                 return static_cast<RenderMode>(Stats & 0x00000011);
             }
           
-          	bool isRenderingScreen() {
+          	static bool isRenderingScreen() {
         		return Scanline < 144; 
         	}
       
-            void waitForVblank() {
+            static void waitForVblank() {
                 while(isRenderingScreen()){;} 
             }
           
-          	void enable() {
+          	static void enable() {
             	Control |= BIT8;
             }
           	
-          	void disable() {
+          	static void disable() {
             	waitForVblank();
               	Control &= ~BIT8;
             }
           
           	namespace Sprites {
-				void set8x8Size() {
+				static void set8x8Size() {
                   	Control &= ~BIT2;
                 }
               
-              	void set8x16Size() {
+              	static void set8x16Size() {
                   	Control |= BIT2;
                 }
               
-              	byte getSpriteWidth() {
+              	static byte getSpriteWidth() {
                  	return 8 + ((Control & ~BIT2) << 1);
                 }
               
-              	void enable() {
+              	static void enable() {
                 	Control |= BIT2;
                 }
               
-              	void disable() {
+              	static void disable() {
                   	Control &= ~BIT2;
                 }
             }
@@ -136,16 +136,16 @@ namespace System {
     }
 
   	// Interrupts
-  	void enableScanlineInterrput() {
+  	static void enableScanlineInterrput() {
     	Output::LCD::Stats |= BIT6; 
     }
-  	void enableOAMInterrupt() {
+  	static void enableOAMInterrupt() {
     	Output::LCD::Stats |= BIT5; 
     }
-  	void enableVblankInterrput() {
+  	static void enableVblankInterrput() {
     	Output::LCD::Stats |= BIT4; 
     }
-  	void enableHblankInterrput() {
+  	static void enableHblankInterrput() {
     	Output::LCD::Stats |= BIT3; 
     }
 }
