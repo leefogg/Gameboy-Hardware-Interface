@@ -111,6 +111,42 @@ namespace System {
               	Control &= ~BIT8;
             }
           
+          	namespace Background {
+				register BGPI  = 		*reinterpret_cast<byte *>(0xFF68); // Background palette index
+              	register BGPD  = 		*reinterpret_cast<byte *>(0xFF69); // Background palette data
+              
+              	static void setPaletteIndex(byte index) {
+                	byte bgpi = BGPI;
+                  	// Limit to 64 range
+                  	index &= 0B00011111; // 64-1, 3F
+                  	
+                  	bgpi &= BIT8; // Preserve the auto increment flag
+                  	bgpi |= index;
+                  	BGPI = bgpi;
+                }
+              	static void setPaletteIndex(byte index, const bool autoincrement) {
+                  	byte bgpi = index;
+                  	// Limit to 64 range
+                 	bgpi &= 0B00011111; // 64-1, 3F
+                  	
+                  	if (autoincrement)
+                    	bgpi |= BIT8;
+                 	
+                  	BGPI = bgpi;
+                }
+              	
+              	static void setPaletteAutoIncrement(const bool autoincrement) {                	
+                  	if (autoincrement) 
+                      BGPI |= 0B10000000;
+                  	else
+                      BGPI &= 0B00011111; // Clear auto increment
+                }
+              
+              	static byte getPaletteIndex() {
+                 	return BGPI & 0B00011111;
+                }
+            }
+          
           	namespace Sprites {
 				static void set8x8Size() {
                   	Control &= ~BIT2;
@@ -151,7 +187,5 @@ namespace System {
 }
 
 int main() {
-    System::Output::LCD::enable();
-  	System::Output::LCD::X++;
-    return System::Output::LCD::getRenderMode();
+    System::Output::LCD::Background::getPaletteIndex();
 }
