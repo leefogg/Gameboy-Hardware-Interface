@@ -33,17 +33,17 @@ namespace System {
     inline volatile byte &memory(const uint16 loc) {
      	return *reinterpret_cast<byte *>(loc);
     }
-  
+	
   	namespace Input {
         volatile byte& JOYP = *reinterpret_cast<byte *>(0xFF00);
-
+		
         static void enableDPad() {
           	JOYP |= BIT5;
         }
         static void enableButtons() {
           	JOYP |= BIT6;
         }
-
+		
         static byte getControllerBits() {
             byte bits;
             enableDPad();
@@ -52,7 +52,7 @@ namespace System {
             bits |= JOYP;
             return bits;
         }
-
+		
         struct Controller {
             Controller(const byte data) : 
                 A(testBit(data, 0)), 
@@ -64,31 +64,35 @@ namespace System {
                 Up(testBit(data, 6)),
                 Down(testBit(data, 7)){
             }
-
+			
             Controller() : 
                 Controller(getControllerBits()) {
             }
-
+			
             bool A, B, Start, Select, Up, Down, Left, Right;
         };
     }
 	
   	namespace Output {
         namespace LCD {
+			const byte 
+            width = 160,
+			height = 144;
+			
             volatile byte& Control = 	*reinterpret_cast<byte *>(0xFF40);
             volatile byte& Stats = 		*reinterpret_cast<byte *>(0xFF41);
             volatile byte& X = 			*reinterpret_cast<byte *>(0xFF43);
             volatile byte& Y = 			*reinterpret_cast<byte *>(0xFF42);
             volatile byte& Scanline = 	*reinterpret_cast<byte *>(0xFF44);
             volatile byte& InterruptY = *reinterpret_cast<byte *>(0xFF45);
-
+			
             enum RenderMode {
                 Hblank,
                 Vblank,
                 OAM,
                 VRAM
             };
-
+			
            	static RenderMode getRenderMode() {
                 return static_cast<RenderMode>(Stats & 0x00000011);
             }
@@ -96,11 +100,11 @@ namespace System {
           	static bool isRenderingScreen() {
         		return Scanline < 144; 
         	}
-      
+			
             static void waitForVblank() {
                 while(isRenderingScreen()){;} 
             }
-          
+			
           	static void enable() {
             	Control |= BIT8;
             }
@@ -147,6 +151,64 @@ namespace System {
             }
           
           	namespace Sprites {
+              	struct Sprite {
+                  private:
+                  byte Y;
+                  byte X;
+                  byte Attributes;
+                  
+                  public:
+                  byte Tile;
+                  
+                  void setY(byte y) { Y = y+16; }
+                  byte getY(){ return Y-16; }
+                  
+                  void setX(byte x) { X = x+8; }
+                  byte getX(){ return X-8; }
+                  
+                  void hide() { Y = height; }
+                  
+                  void setPriority(bool above) {
+                   	 if (above)
+                    	Attributes |= BIT8;
+                    else
+                    	Attributes &= ~BIT8; 
+                  }
+                  
+                  void yFlip(bool flip) {
+                   	  if (flip)
+                    	Attributes |= BIT7;
+                    else
+                    	Attributes &= ~BIT7;
+                  }
+                  void xFlip(bool flip) {
+                   	  if (flip)
+                    	Attributes |= BIT6;
+                    else
+                    	Attributes &= ~BIT6;
+                  }
+                                    
+                  void setTileBank(byte bank) {
+                   	if (bank > 1)
+                      return;
+                       
+                    if (bank == 1)
+                    	Attributes |= BIT3;
+                    else
+                    	Attributes &= ~BIT3;  
+                  }
+                  
+                  void setPalette(byte palette) {
+                  	if (palette > 3)
+                      return;
+					
+                    Attributes &= 0B11111100;
+                    Attributes |= palette;
+                  }
+                };
+              
+              	static Sprite* OAM = (Sprite *)0xFE00;
+              	
 				static void set8x8Size() {
                   	Control &= ~BIT2;
                 }
@@ -186,5 +248,7 @@ namespace System {
 }
 
 int main() {
-    System::Output::LCD::Background::getPaletteIndex();
+    System::Output::LCD::Sprites::OAM[0].setPriority(false);
+  	System::Output::LCD::Sprites::OAM[0].setTileBank(1);
+  	System::Output::LCD::Sprites::OAM[0].xFlip(false);
 }
