@@ -35,7 +35,7 @@ namespace System {
     }
 	
   	namespace Input {
-        volatile byte& JOYP = *reinterpret_cast<byte *>(0xFF00);
+        static volatile byte& JOYP = *reinterpret_cast<byte *>(0xFF00);
 		
         static void enableDPad() {
           	JOYP |= BIT5;
@@ -78,13 +78,13 @@ namespace System {
 			const byte 
             width = 160,
 			height = 144;
-			
-            volatile byte& Control = 	*reinterpret_cast<byte *>(0xFF40);
-            volatile byte& Stats = 		*reinterpret_cast<byte *>(0xFF41);
-            volatile byte& X = 			*reinterpret_cast<byte *>(0xFF43);
-            volatile byte& Y = 			*reinterpret_cast<byte *>(0xFF42);
-            volatile byte& Scanline = 	*reinterpret_cast<byte *>(0xFF44);
-            volatile byte& InterruptY = *reinterpret_cast<byte *>(0xFF45);
+          
+            static volatile byte& Control = 	*reinterpret_cast<byte *>(0xFF40);
+            static volatile byte& Stats = 		*reinterpret_cast<byte *>(0xFF41);
+            static volatile byte& X = 			*reinterpret_cast<byte *>(0xFF43);
+            static volatile byte& Y = 			*reinterpret_cast<byte *>(0xFF42);
+            static volatile byte& Scanline = 	*reinterpret_cast<byte *>(0xFF44);
+            static volatile byte& InterruptY = *reinterpret_cast<byte *>(0xFF45);
 			
             enum RenderMode {
                 Hblank,
@@ -96,7 +96,7 @@ namespace System {
            	static RenderMode getRenderMode() {
                 return static_cast<RenderMode>(Stats & 0x00000011);
             }
-          
+			
           	static bool isRenderingScreen() {
         		return Scanline < 144; 
         	}
@@ -113,10 +113,10 @@ namespace System {
             	waitForVblank();
               	Control &= ~BIT8;
             }
-          
+			
           	namespace Background {
-				volatile byte& BGPI  = *reinterpret_cast<byte *>(0xFF68); // Background palette index
-              	volatile byte& BGPD  = *reinterpret_cast<byte *>(0xFF69); // Background palette data
+				static volatile byte& BGPI  = *reinterpret_cast<byte *>(0xFF68); // Background palette index
+              	static volatile byte& BGPD  = *reinterpret_cast<byte *>(0xFF69); // Background palette data
               
               	static void setPaletteIndex(byte index) {
                 	byte bgpi = BGPI;
@@ -149,7 +149,7 @@ namespace System {
                  	return BGPI & 0B00011111;
                 }
             }
-          
+			
           	namespace Sprites {
               	struct Sprite {
                   private:
@@ -187,7 +187,7 @@ namespace System {
                     else
                     	Attributes &= ~BIT6;
                   }
-                                    
+				  
                   void setTileBank(byte bank) {
                    	if (bank > 1)
                       return;
@@ -231,7 +231,7 @@ namespace System {
             }
         }
     }
-
+	
   	// Interrupts
   	static void enableScanlineInterrput() {
     	Output::LCD::Stats |= BIT6; 
@@ -246,3 +246,4 @@ namespace System {
     	Output::LCD::Stats |= BIT3; 
     }
 }
+
