@@ -114,7 +114,7 @@ namespace System {
               	Control &= ~BIT8;
             }
 			
-          	namespace Background {
+          	namespace Map {
 				static volatile byte& BGPI  = *reinterpret_cast<byte *>(0xFF68); // Background palette index
               	static volatile byte& BGPD  = *reinterpret_cast<byte *>(0xFF69); // Background palette data
               
@@ -235,6 +235,48 @@ namespace System {
               
               	static void disable() {
                   	Control &= ~BIT2;
+                }
+              	
+              	static volatile byte& OBPI  = *reinterpret_cast<byte *>(0xFF6A); // Sprite palette index
+              	static volatile byte& OBPD  = *reinterpret_cast<byte *>(0xFF6B); // Sprite palette data
+              	
+              	static void setPaletteIndex(byte index) {                	
+                  	// Limit to 64 range
+                  	index &= 0B00011111; // 64-1, 3F
+                  
+                  	byte obpi = OBPI;
+                  	obpi &= BIT8; // Preserve the auto increment flag
+                  	obpi |= index;
+                  	OBPI = obpi;
+                }
+              	static void setPaletteIndex(byte index, const bool autoincrement) {
+                  	byte obpi = index;
+                  	// Limit to 64 range
+                 	obpi &= 0B00011111; // 64-1, 3F
+                  	
+                  	if (autoincrement)
+                    	obpi |= BIT8;
+                 	
+                  	OBPI = obpi;
+                }
+              	
+              	static void setPaletteAutoIncrement(const bool autoincrement) {                	
+                  	if (autoincrement) 
+                      OBPI |= 0B10000000;
+                  	else
+                      OBPI &= 0B00011111; // Clear auto increment
+                }
+              
+              	static byte getPaletteIndex() {
+                 	return OBPI & 0B00011111;
+                }
+              
+              	static void setColor(unsigned short color) {
+                 	 OBPD = color;
+                }
+              
+             	 static unsigned short getColor() {
+                 	 return OBPD;
                 }
             }
         }
