@@ -246,9 +246,3 @@ namespace System {
     	Output::LCD::Stats |= BIT3; 
     }
 }
-
-int main() {
-    System::Output::LCD::Sprites::OAM[0].setPriority(false);
-  	System::Output::LCD::Sprites::OAM[0].setTileBank(1);
-  	System::Output::LCD::Sprites::OAM[0].xFlip(false);
-}
