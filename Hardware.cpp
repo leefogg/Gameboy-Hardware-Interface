@@ -118,11 +118,11 @@ namespace System {
 				static volatile byte& BGPI  = *reinterpret_cast<byte *>(0xFF68); // Background palette index
               	static volatile byte& BGPD  = *reinterpret_cast<byte *>(0xFF69); // Background palette data
               
-              	static void setPaletteIndex(byte index) {
-                	byte bgpi = BGPI;
+              	static void setPaletteIndex(byte index) {                	
                   	// Limit to 64 range
                   	index &= 0B00011111; // 64-1, 3F
-                  	
+                  
+                  	byte bgpi = BGPI;
                   	bgpi &= BIT8; // Preserve the auto increment flag
                   	bgpi |= index;
                   	BGPI = bgpi;
@@ -147,6 +147,14 @@ namespace System {
               
               	static byte getPaletteIndex() {
                  	return BGPI & 0B00011111;
+                }
+              
+              	static void setColor(unsigned short color) {
+                 	 BGPD = color;
+                }
+              
+             	 static unsigned short getColor() {
+                 	 return BGPD;
                 }
             }
 			
@@ -246,4 +254,3 @@ namespace System {
     	Output::LCD::Stats |= BIT3; 
     }
 }
-
