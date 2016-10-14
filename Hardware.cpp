@@ -196,6 +196,16 @@ namespace System {
              	 static Color getPaletteColor() {
                  	 return Color(BGPD);
                 }
+				
+				static void setBank(byte bank) {
+                  	if (bank > 1)
+                      	return;
+
+                  	if (bank == 1)
+                  		VBK |= bank;
+                  	else
+						VBK &= ~BIT1;                      
+                }
             }
 			
           	namespace Sprites {
