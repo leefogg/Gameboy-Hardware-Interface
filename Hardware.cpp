@@ -180,17 +180,21 @@ namespace System {
           	static void setSO1Volume(byte volume) {
              	if (volume > 7)
                   return;
-              
-              	NR50 &= 0B11111000;
-              	NR50 |= volume << 4;
+              	
+              	byte nr50 = NR50;
+              	nr50 &= 0B11111000;
+              	nr50 |= volume << 4;
+              	NR50 = nr50;
             }
           
           	static void setSO2Volume(byte volume) {
              	if (volume > 7)
                   return;
-              
-              	NR50 &= 0B10001111;
-              	NR50 |= volume << 4;
+              	
+              	byte nr50 = NR50;
+              	nr50 &= 0B10001111;
+              	nr50 |= volume << 4;
+              	NR50 = nr50;
             }
           	
           	static void enable() {
@@ -425,8 +429,7 @@ namespace System {
             }
         }
     }
-	
-  	// Interrupts
+  	
   	static void enableScanlineInterrput() {
     	Output::LCD::Stats |= BIT6; 
     }
