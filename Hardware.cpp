@@ -111,6 +111,63 @@ namespace System {
     }
 	
   	namespace Output {
+      	namespace Sound {
+          	static volatile byte& NR50 = 	*reinterpret_cast<byte *>(0xFF24);
+          	static volatile byte& NR51  = 	*reinterpret_cast<byte *>(0xFF25);
+         	static volatile byte& NR52  = 	*reinterpret_cast<byte *>(0xFF26);
+          	
+          	static void addChannelToSO1(byte channel) {
+             	 if (channel > 4)
+                   return;
+
+              	NR51 |=  BIT1 << channel;
+            }
+          
+          	static void addChannelToSO2(byte channel) {
+             	 if (channel > 4)
+                   return;
+ 	
+              	NR51 |=  BIT5 << channel;
+            }
+          
+          	static void removeChannelFromSO1(byte channel) {
+             	 if (channel > 3)
+                   return;
+	
+              	NR51 &=  ~(BIT1 << channel);
+            }
+          
+          	static void removeChannelFromSO2(byte channel) {
+             	 if (channel > 3)
+                   return;
+
+              	NR51 &=  ~(BIT5 << channel);
+            }
+          
+          	static void setSO1Volume(byte volume) {
+             	if (volume > 7)
+                  return;
+              
+              	NR50 &= 0B11111000;
+              	NR50 |= volume << 4;
+            }
+          
+          	static void setSO2Volume(byte volume) {
+             	if (volume > 7)
+                  return;
+              
+              	NR50 &= 0B10001111;
+              	NR50 |= volume << 4;
+            }
+          	
+          	static void enable() {
+             	NR52  |= BIT8; 
+            }
+          
+          	static void disable() {
+             	NR52  &= ~BIT8; 
+            }
+        }
         namespace LCD {
 			const byte 
             width = 160,
@@ -152,8 +209,9 @@ namespace System {
             }
 			
           	namespace Map {
-				static volatile byte& BGPI  = *reinterpret_cast<byte *>(0xFF68); // Background palette index
+				static volatile byte& BGPI  = 	*reinterpret_cast<byte *>(0xFF68); // Background palette index
               	static volatile uint16& BGPD  = *reinterpret_cast<uint16 *>(0xFF69); // Background palette data
+              	static volatile byte& VBK  = 	*reinterpret_cast<byte *>(0xFF4F); // VRAM Bank (0 or 1)
               
               	static void setPaletteIndex(byte index) {                	
                   	// Limit to 64 range
@@ -196,8 +254,8 @@ namespace System {
              	 static Color getPaletteColor() {
                  	 return Color(BGPD);
                 }
-				
-				static void setBank(byte bank) {
+              
+              	static void setBank(byte bank) {
                   	if (bank > 1)
                       	return;
 
