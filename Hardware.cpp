@@ -103,6 +103,56 @@ namespace System {
         TAC = tac;
       }
     }
+  
+  	namespace Serial {
+		static volatile byte& SB = *reinterpret_cast<byte *>(0xFF01);
+      	static volatile byte& SC = *reinterpret_cast<byte *>(0xFF02);
+      	
+      	static void setData(byte data) {
+         	SB = data; 
+        }
+      
+      	static byte getData() {
+         	return SB; 
+        }
+      
+      	static void startTransfer() {
+          	SC |= BIT8;
+        }
+      	
+      	static void stopTransfer() {
+          	SC &= ~BIT8;
+        }
+      
+      	static void setClockSpeed(bool fast) {
+         	if (fast)
+              SC |= BIT2;
+          	else
+              SC &= ~BIT2;
+        }
+      
+      	static void setClockSource(bool internal) {
+         	 if (internal)
+               SC |= BIT1;
+          	else
+              SC &= BIT1;
+        }
+      
+      	static void set(bool start, bool fast, bool internal) {
+         	byte sc;
+          
+          	if (internal)
+              	sc |= BIT1;
+          
+          	if (fast)
+              	sc |= BIT2;
+          	
+          	if (start)
+            	sc |= BIT8;
+
+          	SC = sc;
+        }
+    }
   	
   	namespace Input {
         static volatile byte& JOYP = *reinterpret_cast<byte *>(0xFF00);
