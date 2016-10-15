@@ -70,7 +70,40 @@ namespace System {
     inline volatile byte &memory(const uint16 loc) {
      	return *reinterpret_cast<byte *>(loc);
     }
-	
+  
+  	namespace Timer {
+      static volatile byte& DIV = 	*reinterpret_cast<byte *>(0xFF04);
+      static volatile byte& TIMA = 	*reinterpret_cast<byte *>(0xFF05);
+      static volatile byte& TMA = 	*reinterpret_cast<byte *>(0xFF06);
+      static volatile byte& TAC = 	*reinterpret_cast<byte *>(0xFF07);
+      
+      static void set(byte value) {
+       	TIMA = value;
+      }
+      
+      static void setResetValue(byte value) {
+       	TMA = value; 
+      }
+      
+      static void start() {
+       	TAC |= BIT3; 
+      }
+      
+      static void stop() {
+       	TAC &= ~BIT3; 
+      }
+      
+      static void setClock(byte clock) {
+		if (clock > 3)
+          return;
+        
+        byte tac = TAC;
+        tac &= 0B11111000;
+        tac |= clock;
+        TAC = tac;
+      }
+    }
+  	
   	namespace Input {
         static volatile byte& JOYP = *reinterpret_cast<byte *>(0xFF00);
 		
