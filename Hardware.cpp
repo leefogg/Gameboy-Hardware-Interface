@@ -229,7 +229,7 @@ namespace System {
             }
 			
           	static bool isRenderingScreen() {
-        		return Scanline < 144; 
+        		return Scanline < height; 
         	}
 			
             static void waitForVblank() {
