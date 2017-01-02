@@ -20,19 +20,19 @@ struct Color {
   
   	static const uint16 componentMask = 0B11111;
   
-  	byte setRed(byte red) {
+  	void setRed(byte red) {
       red &= componentMask;
       
       data &= ~componentMask;
       data |= red;
     }
-  	byte setGreen(byte green) {
+  	void setGreen(byte green) {
       green &= componentMask;
       
       data &= ~(componentMask << 5);
       data |= (green << 5);
     }
-	byte setBlue(byte blue) {
+	void setBlue(byte blue) {
       blue &= componentMask;
       
       data &= ~(componentMask << 10);
