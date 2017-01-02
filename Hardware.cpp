@@ -18,25 +18,26 @@ struct Color {
   	
   	volatile uint16 data;
   
+	// Each component is 5-bit. This is used to mask and erase data.
   	static const uint16 componentMask = 0B11111;
   
   	void setRed(byte red) {
-      red &= componentMask;
+      red &= componentMask; // Limit to 5-bit
       
-      data &= ~componentMask;
-      data |= red;
+      data &= ~componentMask; // Erase previous value
+      data |= red; // Set new value
     }
   	void setGreen(byte green) {
-      green &= componentMask;
+      green &= componentMask; // Limit to 5-bit
       
-      data &= ~(componentMask << 5);
-      data |= (green << 5);
+      data &= ~(componentMask << 5);  // Erase previous value
+      data |= (green << 5); // Set new value
     }
 	void setBlue(byte blue) {
-      blue &= componentMask;
+      blue &= componentMask; // Limit to 5-bit
       
-      data &= ~(componentMask << 10);
-      data |= (blue << 10);
+      data &= ~(componentMask << 10);  // Erase previous value
+      data |= (blue << 10); // Set new value
     }
   	
   	byte getRed() {
@@ -67,13 +68,9 @@ namespace {
 }
 
 namespace System {
-    inline volatile byte &memory(const uint16 loc) {
-     	return *reinterpret_cast<byte *>(loc);
-    }
-  
   	namespace Timer {
       static volatile byte& DIV = 	*reinterpret_cast<byte *>(0xFF04);
-      static volatile byte& TIMA = 	*reinterpret_cast<byte *>(0xFF05);
+      static volatile byte& TIMA = *reinterpret_cast<byte *>(0xFF05);
       static volatile byte& TMA = 	*reinterpret_cast<byte *>(0xFF06);
       static volatile byte& TAC = 	*reinterpret_cast<byte *>(0xFF07);
       
