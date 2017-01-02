@@ -265,7 +265,7 @@ namespace System {
             static volatile byte& X = 			*reinterpret_cast<byte *>(0xFF43);
             static volatile byte& Y = 			*reinterpret_cast<byte *>(0xFF42);
             static volatile byte& Scanline = 	*reinterpret_cast<byte *>(0xFF44);
-            static volatile byte& InterruptY = 	*reinterpret_cast<byte *>(0xFF45);
+            static volatile byte& InterruptY =*reinterpret_cast<byte *>(0xFF45);
 			
             enum RenderMode {
                 Hblank,
@@ -296,9 +296,9 @@ namespace System {
             }
 			
           	namespace Map {
-				static volatile byte& BGPI  = 	*reinterpret_cast<byte *>(0xFF68); // Background palette index
-              	static volatile uint16& BGPD  = *reinterpret_cast<uint16 *>(0xFF69); // Background palette data
-              	static volatile byte& VBK  = 	*reinterpret_cast<byte *>(0xFF4F); // VRAM Bank (0 or 1)
+				static volatile byte& BGPI  =		*reinterpret_cast<byte *>(0xFF68); // Background palette index
+              	static volatile uint16& BGPD  =	*reinterpret_cast<uint16 *>(0xFF69); // Background palette data
+              	static volatile byte& VBK  =		*reinterpret_cast<byte *>(0xFF4F); // VRAM Bank (0 or 1)
               
               	static void setPaletteIndex(byte index) {                	
                   	// Limit to 64 range
@@ -432,8 +432,8 @@ namespace System {
                   	Control &= ~BIT2;
                 }
               	
-              	static volatile byte& OBPI  = 	*reinterpret_cast<byte *>(0xFF6A); // Sprite palette index
-              	static volatile uint16& OBPD  = *reinterpret_cast<uint16 *>(0xFF6B); // Sprite palette data
+              	static volatile byte& OBPI  = 		*reinterpret_cast<byte *>(0xFF6A); // Sprite palette index
+              	static volatile uint16& OBPD  = 	*reinterpret_cast<uint16 *>(0xFF6B); // Sprite palette data
               	
               	static void setPaletteIndex(byte index) {                	
                   	// Limit to 64 range
